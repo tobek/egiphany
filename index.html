@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
+    <meta charset='utf-8'>
+
+    <!-- <link rel="shortcut icon" href="/favicon.png"> -->
+
+    <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #image {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- transparent 1x1 gif -->
+    <img id="image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+    <script>
+        var imgUrls = [];
+        var nextImgTimeout;
+        var playing = false;
+
+        getGifs(0, function() {
+            playing = true;
+            showRandomImg();
+
+            setTimeout(function() {
+                loadMore(100);
+            });
+        });
+
+        function showRandomImg(){
+            var randomIndex = Math.floor(Math.random() * imgUrls.length);
+
+            console.log('showing image #', randomIndex);
+
+            $("#image").attr("src", imgUrls[randomIndex]);
+
+            if (playing) {
+                nextImgTimeout = setTimeout(function () {
+                    showRandomImg();
+                }, 10000);
+            }
+        }
+
+        function loadMore(offset) {
+            getGifs(offset, function(json) {
+                if (json.pagination.count + json.pagination.offset < json.pagination.total_count) {
+                    setTimeout(function() {
+                        loadMore(offset + 100);
+                    }, 5000);
+                }
+                else {
+                    console.log('we got all the images', imgUrls.length);
+                }
+            });
+        }
+        
+        $(document).on("keyup", function(event){
+            if (event.keyCode === 38) { // up
+                // favorite!
+            }
+            else if (event.keyCode === 39) { // right
+                next();
+            }
+            else if (event.keyCode === 32) { // space
+                playPause();
+            }
+        });
+
+        $('#image').on('click', next);
+
+        function next() {
+            clearTimeout(nextImgTimeout);
+            showRandomImg();
+        }
+
+        function playPause() {
+            if (playing) {
+                playing = false;
+                clearTimeout(nextImgTimeout);
+            }
+            else {
+                // when we restart playing we immediately go to next image instead of resuming timeout. is that cool?
+                playing = true;
+                showRandomImg();
+            }
+        }
+
+        function getGifs(offset, cb) {
+            $.getJSON(
+                'http://api.giphy.com/v1/gifs/search?q=psychedelic&api_key=dc6zaTOxFJmzC&limit=100&offset=' + offset,
+                function(json) {
+                    json.data.forEach(function(gif){
+                        imgUrls.push(gif.images.original.url);
+                    });
+
+                    cb(json);
+                }
+            );
+        }
+    </script>
+</body>
+</html>
