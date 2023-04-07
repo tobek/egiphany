@@ -73,7 +73,7 @@
 
       display: none;
       opacity: 0;
-      transition: opacity 250ms ease-in-out;
+      transition: transform 500ms ease-in-out, opacity 250ms ease-in-out;
     }
 
     #open-button span {
@@ -81,7 +81,7 @@
       width: 30px;
       height: 3px;
       margin: 6px auto;
-      transition: transform 150ms ease-in-out;
+      transition: opacity 150ms ease-in-out;
       background-color: #000;
       border: 1px solid white;
       opacity: 0.25;
@@ -89,6 +89,13 @@
     }
     #open-button:hover span {
       transform: scale(1.2);
+    }
+    #open-button.bounce {
+      transform: scale(1.5);
+    }
+    #open-button.bounce span {
+      transition-duration: 500ms;
+      opacity: 1;
     }
 
     button {
@@ -140,6 +147,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
   <script>
+    var dialogOpen = true;
     var openButton = document.getElementById("open-button");
     var overlay = document.getElementById("overlay");
     overlay.style.display = "block";
@@ -152,6 +160,14 @@
       setTimeout(function() {
         openButton.style.opacity = "1";
       }, 1);
+
+      setTimeout(function() {
+        openButton.classList.add("bounce");
+      }, 250);
+      setTimeout(function() {
+        openButton.classList.remove("bounce");
+      }, 750);
+      dialogOpen = false;
     }
     function showDialog() {
       overlay.style.display = "block";
@@ -162,6 +178,7 @@
       setTimeout(function() {
         openButton.style.display = "none";
       }, 250);
+      dialogOpen = true;
     }
     document.getElementById("close-button").onclick = hideDialog;
     overlay.onclick = function(event) {
@@ -251,6 +268,13 @@
     }
 
     $(document).on("keyup", function(event){
+      if (event.keyCode === 27) { // escape
+        if (dialogOpen) {
+          hideDialog();
+        } else {
+          showDialog();
+        }
+      }
       if (event.keyCode === 38) { // up
         // favorite!
       }
