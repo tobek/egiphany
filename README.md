@@ -9,6 +9,7 @@ Open up `index.html` in your browser. Sit back and melt your brainz.
 - `mouse click`: Next gif
 - `right arrow`: Next gif
 - `space`: Pause/play
+- `escape`: Close/open dialog
 
 By default it queries giphy for `psychedelic` gifs, but you can change this with the `q` query string param, e.g. `index.html?q=wtf`.
 

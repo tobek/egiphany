@@ -10,6 +10,9 @@
 
   <!-- <link rel="shortcut icon" href="/favicon.png"> -->
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bellota:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     html,body,div,span,applet,object,iframe,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
@@ -20,7 +23,10 @@
       overflow: hidden;
       background-color: black;
       font-size: 20px;
-      font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+      font-family: 'Bellota', cursive;
+    }
+    button {
+      font-family: 'Bellota', cursive;
     }
     button, input {
       font-size: 20px;
@@ -50,10 +56,10 @@
       left: 50%;
       transform: translate(-50%, -50%);
       color: white;
-      background-color: rgba(0, 0, 0, 0.75);
+      background-color: rgba(0, 0, 0, 0.8);
       width: 300px;
-      height: 400px;
-      max-width: 80vw;
+      height: auto;
+      max-width: calc(80vw - 50px);
       max-height: 80vh;
       padding: 50px;
       text-align: left;
@@ -115,6 +121,20 @@
     form {
       display: flex;
     }
+
+    #footer {
+      text-align: right;
+      font-size: 16px;
+    }
+    #footer a {
+      color: #aaa;
+    }
+    #footer a:hover {
+      color: #ccc;
+    }
+    #footer a:visited {
+      color: #999;
+    }
   </style>
 </head>
 
@@ -136,6 +156,9 @@
       <br>
       <br>
       <button id="close-button">Close</button>
+      <br>
+      <br>
+      <p id="footer"><a href="https://github.com/tobek/egiphany" target="_blank">More info</a></p>
     </div>
   </div>
   <button id="open-button">
