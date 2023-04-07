@@ -114,7 +114,7 @@
             var query = getQueryVar('q', 'psychedelic'); 
 
             $.getJSON(
-                'http://api.giphy.com/v1/gifs/search?q=' + query + '&api_key=ziw22EWiLnG37yv84a7pdfV372vVNSaM&limit=100&offset=' + offset,
+                'https://api.giphy.com/v1/gifs/search?q=' + query + '&api_key=ziw22EWiLnG37yv84a7pdfV372vVNSaM&limit=100&offset=' + offset,
                 function(json) {
                     json.data.forEach(function(gif){
                         imgUrls.push(gif.images.original.url);
