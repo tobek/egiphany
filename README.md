@@ -19,7 +19,7 @@ By default it queries giphy for `psychedelic` gifs, but you can change this with
 - Connect to your account and:
     - Favorite (and downvote/blacklist?) gifs
     - Play from favorites
-- A UI!
+- A prettier UI
 - Play from multiple tags
 - Move to previous
 - Browser back/forward buttons and touch swipe to move prev/next

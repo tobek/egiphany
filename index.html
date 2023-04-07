@@ -2,27 +2,111 @@
 <html lang="en">
 
 <head>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
   <meta charset='utf-8'>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" >
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
   <title>Egiphany</title>
 
   <!-- <link rel="shortcut icon" href="/favicon.png"> -->
 
-  <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 
   <style>
+    html,body,div,span,applet,object,iframe,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}table{border-collapse:collapse;border-spacing:0}
+
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
       background-color: black;
+      font-size: 20px;
+      font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+    }
+    button, input {
+      font-size: 20px;
     }
 
     #image {
       object-fit: cover;
       width: 100%;
       height: 100%;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      z-index: 9999;
+      display: none;
+      transition: opacity 250ms ease-in-out;
+    }
+
+    #dialog {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      background-color: rgba(0, 0, 0, 0.75);
+      width: 300px;
+      height: 400px;
+      max-width: 80vw;
+      max-height: 80vh;
+      padding: 50px;
+      text-align: left;
+      border-radius: 15px;
+    }
+
+    #open-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: none;
+      cursor: pointer;
+
+      display: none;
+      opacity: 0;
+      transition: opacity 250ms ease-in-out;
+    }
+
+    #open-button span {
+      display: block;
+      width: 30px;
+      height: 3px;
+      margin: 6px auto;
+      transition: transform 150ms ease-in-out;
+      background-color: #000;
+      border: 1px solid white;
+      opacity: 0.25;
+      border-radius: 999px;
+    }
+    #open-button:hover span {
+      transform: scale(1.2);
+    }
+
+    button {
+      cursor: pointer;
+      background: none;
+      outline: 0;
+      box-shadow: none;
+      border: 1px solid white;
+      color: white;
+      padding: 2px 12px;
+      border-radius: 5px;
+    }
+    input[type=text] {
+      margin-right: 10px;
+      min-width: 0;
+    }
+    form {
+      display: flex;
     }
   </style>
 </head>
@@ -31,26 +115,112 @@
   <!-- transparent 1x1 gif -->
   <img id="image" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
 
+  <div id="overlay">
+    <div id="dialog">
+      <h1>Egiphany</h1>
+      <h2>Controls</h2>
+      <p>Click or tap: Next gif</p>
+      <p>Spacebar: Pause/resume</p>
+      <h2>Search</h2>
+      <form id="search-form">
+        <input type="text" id="search-input" value="psychedelic">
+        <button type="submit" id="search-button">Search</button>
+      </form>
+      <br>
+      <br>
+      <button id="close-button">Close</button>
+    </div>
+  </div>
+  <button id="open-button">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
   <script>
-    var imgUrls = [];
-    var nextImgTimeout;
-    var playing = false;
+    var openButton = document.getElementById("open-button");
+    var overlay = document.getElementById("overlay");
+    overlay.style.display = "block";
+    function hideDialog() {
+      overlay.style.opacity = "0";
+      setTimeout(function() {
+        overlay.style.display = "none";
+      }, 250);
+      openButton.style.display = "block";
+      setTimeout(function() {
+        openButton.style.opacity = "1";
+      }, 1);
+    }
+    function showDialog() {
+      overlay.style.display = "block";
+      setTimeout(function() {
+        overlay.style.opacity = "1";
+      }, 1);
+      openButton.style.opacity = "0";
+      setTimeout(function() {
+        openButton.style.display = "none";
+      }, 250);
+    }
+    document.getElementById("close-button").onclick = hideDialog;
+    overlay.onclick = function(event) {
+      if (event.target === overlay) {
+        hideDialog();
+      }
+    }
+    openButton.onclick = showDialog;
 
-    getGifs(0, function(json) {
-      if (json.data.length === 0) {
-        alert('No gifs found for that query!');
+    document.getElementById("search-form").onsubmit = function(event) {
+      event.preventDefault();
+      var searchInput = document.getElementById("search-input").value;
+      if (!searchInput) {
         return;
       }
 
-      playing = true;
-      showRandomImg();
+      if (searchInput !== query) {
+        newQuery(searchInput);
+        var currentUrl = window.location.href.split('?')[0];
+        var newUrl = currentUrl + '?q=' + encodeURIComponent(searchInput);
+        history.pushState({ url: newUrl }, "Egiphany", newUrl);
+      }
 
-      setTimeout(function() {
-        loadMore(100);
+      hideDialog();
+    }
+
+    var query = getQueryVar('q', 'psychedelic');
+    document.getElementById("search-input").value = query;
+    var imgUrls = [];
+    var timeouts = [];
+    var nextImgTimeout;
+    var playing = false;
+
+    function newQuery(updateQuery) {
+      if (updateQuery) {
+        query = updateQuery;
+      }
+      imgUrls = [];
+      getGifs(0, function(json) {
+        if (json.data.length === 0) {
+          alert('No gifs found for that query!');
+          return;
+        }
+
+        timeouts.forEach(function (timeout) {
+          clearTimeout(timeout);
+        });
+        timeouts = [];
+
+        playing = true;
+        showRandomImg();
+
+        timeouts.push(setTimeout(function() {
+          loadMore(100);
+        }));
       });
-    });
+    }
+
+    newQuery();
 
     function showRandomImg(){
       var randomIndex = Math.floor(Math.random() * imgUrls.length);
@@ -63,15 +233,16 @@
         nextImgTimeout = setTimeout(function () {
           showRandomImg();
         }, 10000);
+        timeouts.push(nextImgTimeout);
       }
     }
 
     function loadMore(offset) {
       getGifs(offset, function(json) {
         if (json.pagination.count + json.pagination.offset < json.pagination.total_count) {
-          setTimeout(function() {
+          timeouts.push(setTimeout(function() {
             loadMore(offset + 100);
-          }, 5000);
+          }, 5000));
         }
         else {
           console.log('we got all the images. there are ', imgUrls.length);
@@ -111,8 +282,6 @@
     }
 
     function getGifs(offset, cb) {
-      var query = getQueryVar('q', 'psychedelic');
-
       $.getJSON(
         'https://api.giphy.com/v1/gifs/search?q=' + query + '&api_key=ziw22EWiLnG37yv84a7pdfV372vVNSaM&limit=100&offset=' + offset,
         function(json) {
